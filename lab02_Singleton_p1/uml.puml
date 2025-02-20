@@ -1,0 +1,155 @@
+@startuml UML
+skinparam ClassAttributeIconSize 0
+skinparam Linetype ortho
+
+class BorderCircle {
+  + BorderCircle(Point, double):
+  # getRenderer() : Renderer
+  + getColor() : Color
+}
+class BorderRenderer {
+  - {static} instance: BorderRenderer
+  - {static} STROKE_WIDTH = 2 : int
+  - BorderRenderer():
+  + {static} getInstance() : BorderRenderer
+  + display(Graphics2D, Bounceable): void
+}
+class BorderShapeFactory {
+  - BorderShapeFactory(): 
+  - {static} instance: BorderShapeFactory
+  + {static} getInstance() : BorderShapeFactory
+  + createCircle(Point, int): Bounceable
+  + createSquare(Point, int): Bounceable
+}
+class BorderSquare {
+  + BorderSquare(Point, int): 
+  # getRenderer() : Renderer
+  + getColor() : Color
+}
+interface Bounceable << interface >> {
+  + draw(): void
+  + move(): void
+  + getColor() : Color
+  + getShape() : Shape
+  + getWidth() : double
+  + getHeight() : double
+}
+abstract class BounceableObject {
+  # BounceableObject(Point): 
+  - {static} SPEED_MULTIPLIER = 10 : int
+  # pos : Point
+  - direction : Point
+  - maxWidth : int
+  - maxHeight : int
+  - bounceResize(): void
+  - bounceLimits(): void
+  + draw(): void
+  + move(): void
+  + {abstract} getRenderer() : Renderer
+  + {abstract} getColor() : Color
+  + {abstract} getShape() : Shape
+}
+class Bouncers {
+  + Bouncers(): 
+  - {static} NUM_SHAPES_CREATED = 10 : int
+  - {static} MAX_SIZE = 50 : int
+  - {static} MIN_SIZE = 10 : int
+  - {static} TIMER_DELAY = 16 : int
+  - random : Random
+  - generateShapes(ShapeFactory): void
+  + run(): void
+  - handleKeyPress(int): void
+  + {static} main(String[]): void
+}
+
+abstract class Circle {
+  + Circle(Point, double):
+  - diameter : double 
+  + getWidth() : double
+  + getHeight() : double
+  + getShape() : Shape
+}
+
+interface Displayer << interface >> {
+  + repaint(): void
+  + getWidth() : int
+  + setTitle(String) : String
+  + getGraphics() : Graphics2D
+  + getHeight() : int
+}
+
+class FilledCircle {
+  + FilledCircle(Point, double): 
+  # getRenderer() : Renderer
+  + getColor() : Color
+}
+
+class FilledRenderer {
+  - FilledRenderer(): 
+  - {static} instance: FilledRenderer
+  + display(Graphics2D, Bounceable): void
+  + {static} getInstance() : FilledRenderer
+}
+
+class FilledShapeFactory {
+  - FilledShapeFactory(): 
+  - {static} instance: FilledShapeFactory
+  + createCircle(Point, int): Bounceable
+  + createSquare(Point, int): Bounceable
+  + {static} getInstance() : FilledShapeFactory
+}
+class FilledSquare {
+  + FilledSquare(Point, int): 
+  # getRenderer() : Renderer
+  + getColor() : Color
+}
+
+interface Renderer << interface >> {
+  + display(Graphics2D, Bounceable): void
+}
+
+class ShapeDisplay {
+  - ShapeDisplay(): 
+  - {static} HEIGHT = 600 : int
+  - {static} WIDTH = 600 : int
+  - {static} instance: ShapeDisplay
+  - frame : JFrame
+  - image : Image
+  + resetImage(): void
+  + addKeyListener(KeyAdapter): void
+  + repaint(): void
+  + {static} getInstance() : ShapeDisplay
+  + getWidth() : int
+  + getHeight() : int
+  + setTitle(String) : String
+  + getGraphics() : Graphics2D
+  + setMinimumSize(int, int): void
+}
+
+interface ShapeFactory << interface >> {
+  + createCircle(Point, int): Bounceable
+  + createSquare(Point, int): Bounceable
+}
+abstract class Square {
+  + Square(Point, int): 
+  - side : int
+  + getWidth() : double
+  + getShape() : Shape
+  + getHeight() : double
+}
+
+Circle        ^--  BorderCircle         
+Renderer      ^..  BorderRenderer
+ShapeFactory  ^..  BorderShapeFactory
+Square        ^--  BorderSquare
+Bounceable    ^.  BounceableObject
+Bouncers           "1" --> "*" Bounceable : - bouncers
+Bouncers           "1" --> "1" ShapeDisplay : - display
+BounceableObject ^-- Circle 
+Circle        ^--  FilledCircle
+Renderer      ^..  FilledRenderer
+ShapeFactory  ^..  FilledShapeFactory
+Square        ^--  FilledSquare
+BounceableObject ^-- Square
+Displayer  ^.. ShapeDisplay
+@enduml
